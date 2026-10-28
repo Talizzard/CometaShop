@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.CometaShop" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowSplashScreenBackground">#37342D</item>
+        <item name="android:statusBarColor">#37342D</item>
+    </style>
+</resources>

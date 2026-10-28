@@ -1,0 +1,59 @@
+# Built application files
+*.apk
+*.ap_
+*.aab
+
+# Files for the Dalvik VM
+*.dex
+
+# Java class files
+*.class
+
+# Generated files
+bin/
+gen/
+out/
+build/
+
+# Gradle files
+.gradle/
+build/
+
+# Local configuration file (sdk path, etc.)
+local.properties
+
+# IntelliJ project files
+*.iml
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/assetCharacteristics.xml
+.idea/shelf/
+.idea/gradle.xml
+.idea/libraries/
+.idea/caches/
+.idea/php.xml
+.idea/rustfmt.toml
+# Mantém apenas configurações essenciais do projeto no .idea se necessário, mas o padrão exclui o workspace.xml
+
+# Compilation output
+*.hprof
+.transforms/
+
+# OS-Specific files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# Android Studio Navigation editor temp files
+.navigation/
+
+# Captured app-level debug/profiling assets
+capture/
+
+# Firebase / Google Services (Se usar chaves locais que não devem ir pro git - opcional, mas recomendado se tiver google-services.json privado)
+# google-services.json
