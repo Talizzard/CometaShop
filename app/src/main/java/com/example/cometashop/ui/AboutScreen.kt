@@ -71,9 +71,9 @@ fun AboutScreen(onBackClick: () -> Unit) {
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = "Somos a Cometa, a principal fornecedora de equipamentos táticos, skins de alta performance e arsenais pesados para os competidores de The Finals.\n" +
+                text = "Somos a Cometa, a principal fornecedora de skins de alta performance para todos os jogadores e todos os jogos (disponiveis).\n" +
                         "\n" +
-                        "Nossa missão é garantir que você tenha o equipamento certo para destruir a arena, proteger o seu cofre e alcançar a glória sob os holofotes.\n" +
+                        "Nossa missão é garantir que você tenha o equipamento certo para destruir seus inimigos no estilo e alcançar a glória sob os holofotes.\n" +
                         "\n" +
                         "TEMOS: Tales Mácola, Gustavo Medina e Henrique Funes. \nA equipe mais badalada de todos os tempos!!",
                 color = CometaWhite,
