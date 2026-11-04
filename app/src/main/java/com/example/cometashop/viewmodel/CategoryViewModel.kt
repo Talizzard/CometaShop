@@ -1,70 +1,106 @@
 package com.example.cometashop.viewmodel
 
-import android.app.Application
 import android.util.Log
-import androidx.lifecycle.AndroidViewModel
-import com.example.cometashop.model.AppDatabase
-import com.example.cometashop.model.Categoria
-import com.example.cometashop.model.ImageStorage
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.cometashop.data.Categoria
+import com.example.cometashop.data.repository.CategoriaRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 private const val TAG = "CategoryViewModel"
 
-class CategoryViewModel(application: Application) : AndroidViewModel(application) {
+class CategoryViewModel(private val repository: CategoriaRepository) : ViewModel() {
 
-    private val db = AppDatabase.obterInstancia(application)
-    private val categoriaDao = db.categoriaDao()
-    private val produtoDao = db.produtoDao()
+    private val _uiState = MutableStateFlow(CategoryUiState())
+    val uiState: StateFlow<CategoryUiState> = _uiState.asStateFlow()
 
-    private val _categories = MutableStateFlow<List<Categoria>>(emptyList())
-    val categories: StateFlow<List<Categoria>> = _categories.asStateFlow()
+    init {
+        observarCategorias()
+    }
 
-    fun carregar() {
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                _categories.value = categoriaDao.buscarTodos()
-            } catch (e: Exception) {
-                Log.e(TAG, "Erro ao buscar categorias", e)
-            }
+    private fun observarCategorias() {
+        viewModelScope.launch {
+            repository.buscarTodos()
+                .catch { e ->
+                    Log.e(TAG, "Erro ao buscar categorias", e)
+                    _uiState.update { it.copy(carregando = false) }
+                }
+                .collect { lista ->
+                    _uiState.update { it.copy(categorias = lista, carregando = false) }
+                }
         }
     }
 
-    fun addCategory(nome: String) {
+    fun aoMudarNomeNovaCategoria(texto: String) {
+        _uiState.update { it.copy(nomeNovaCategoria = texto) }
+    }
+
+    fun aoEscolherImagemNova(uri: String) {
+        _uiState.update { it.copy(imagemNova = uri) }
+    }
+
+    fun adicionarCategoria() {
+        val nome = _uiState.value.nomeNovaCategoria
+        val imagem = _uiState.value.imagemNova
+        _uiState.update { it.copy(nomeNovaCategoria = "", imagemNova = null) }
         if (nome.isBlank()) return
-        CoroutineScope(Dispatchers.IO).launch {
+        viewModelScope.launch {
             try {
-                categoriaDao.inserir(Categoria(nome = nome.trim()))
-                _categories.value = categoriaDao.buscarTodos()
+                repository.inserir(Categoria(nome = nome.trim(), imagemUri = imagem))
             } catch (e: Exception) {
                 Log.e(TAG, "Erro ao inserir categoria", e)
             }
         }
     }
 
-    fun updateCategory(categoria: Categoria, novoNome: String) {
+    fun iniciarEdicao(categoria: Categoria) {
+        _uiState.update {
+            it.copy(
+                categoriaEmEdicao = categoria,
+                nomeEditado = categoria.nome,
+                imagemEditada = categoria.imagemUri
+            )
+        }
+    }
+
+    fun aoMudarNomeEditado(texto: String) {
+        _uiState.update { it.copy(nomeEditado = texto) }
+    }
+
+    fun aoEscolherImagemEditada(uri: String) {
+        _uiState.update { it.copy(imagemEditada = uri) }
+    }
+
+    fun cancelarEdicao() {
+        _uiState.update {
+            it.copy(categoriaEmEdicao = null, nomeEditado = "", imagemEditada = null)
+        }
+    }
+
+    fun salvarEdicao() {
+        val categoria = _uiState.value.categoriaEmEdicao ?: return
+        val novoNome = _uiState.value.nomeEditado
+        val novaImagem = _uiState.value.imagemEditada
+        cancelarEdicao()
         if (novoNome.isBlank()) return
-        CoroutineScope(Dispatchers.IO).launch {
+        viewModelScope.launch {
             try {
-                categoriaDao.atualizar(categoria.copy(nome = novoNome.trim()))
-                _categories.value = categoriaDao.buscarTodos()
+                repository.atualizar(categoria.copy(nome = novoNome.trim(), imagemUri = novaImagem))
             } catch (e: Exception) {
                 Log.e(TAG, "Erro ao atualizar categoria", e)
             }
         }
     }
 
-    fun removeCategory(categoria: Categoria) {
-        CoroutineScope(Dispatchers.IO).launch {
+    fun removerCategoria(categoria: Categoria) {
+        viewModelScope.launch {
             try {
-                val produtos = produtoDao.buscarPorCategoria(categoria.id)
-                categoriaDao.deletar(categoria)
-                produtos.forEach { ImageStorage.apagar(getApplication<Application>(), it.imagemUri) }
-                _categories.value = categoriaDao.buscarTodos()
+                repository.deletar(categoria)
             } catch (e: Exception) {
                 Log.e(TAG, "Erro ao deletar categoria", e)
             }

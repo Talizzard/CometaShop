@@ -7,6 +7,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -21,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.example.cometashop.data.Produto
 import com.example.cometashop.ui.theme.*
 import com.example.cometashop.viewmodel.ProductViewModel
 
@@ -29,16 +31,16 @@ import com.example.cometashop.viewmodel.ProductViewModel
 fun ProductDetailScreen(
     productId: Int,
     viewModel: ProductViewModel,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onAdicionarAoCarrinho: (Produto) -> Unit
 ) {
-    val product by viewModel.produtoSelecionado.collectAsState()
-    val carregado by viewModel.detalheCarregado.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
 
     LaunchedEffect(productId) {
         viewModel.carregarProduto(productId)
     }
 
-    val item = product
+    val item = uiState.produtoSelecionado
     if (item == null) {
         Box(
             modifier = Modifier
@@ -46,7 +48,7 @@ fun ProductDetailScreen(
                 .background(CometaBlack),
             contentAlignment = Alignment.Center
         ) {
-            if (carregado) {
+            if (uiState.detalheCarregado) {
                 Text("Item não encontrado.", color = CometaWhite)
             } else {
                 CircularProgressIndicator(color = CometaYellow)
@@ -66,6 +68,27 @@ fun ProductDetailScreen(
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = CometaBlack)
             )
+        },
+        bottomBar = {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(CometaBlack)
+                    .navigationBarsPadding()
+                    .padding(16.dp)
+            ) {
+                Button(
+                    onClick = { onAdicionarAoCarrinho(item) },
+                    colors = ButtonDefaults.buttonColors(containerColor = CometaRed),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp)
+                ) {
+                    Icon(Icons.Default.ShoppingCart, contentDescription = null, tint = CometaWhite)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("ADICIONAR AO CARRINHO", color = CometaWhite, fontWeight = FontWeight.Bold)
+                }
+            }
         },
         containerColor = CometaBlack
     ) { paddingValues ->
@@ -89,7 +112,7 @@ fun ProductDetailScreen(
             )
 
             Text(
-                text = "MC: $${item.preco}",
+                text = formatarPreco(item.preco),
                 color = CometaYellow,
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold

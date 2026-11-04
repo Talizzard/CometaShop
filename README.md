@@ -1,6 +1,6 @@
 # CometaShop — Trabalho 3 (Persistência com Room)
 
-App Android em Kotlin + Jetpack Compose com catálogo de armas de The Finals. Categorias e produtos são salvos de verdade no banco local (Room/SQLite) e continuam lá depois de fechar o app.
+App Android em Kotlin + Jetpack Compose com loja com vários jogos (cada categoria é um jogo, com imagem). Categorias e produtos são salvos de verdade no banco local (Room/SQLite) e continuam lá depois de fechar o app.
 
 ## Como rodar
 
@@ -13,25 +13,29 @@ Para testar a persistência: criar uma categoria, criar um item do arsenal com f
 
 ## O que cada tela faz
 
-- Home: acesso às telas de categorias, arsenal e sobre nós.
-- Categorias: criar, editar (ícone de lápis) e remover categorias.
-- Arsenal: listar, filtrar, criar, editar (ícone de lápis) e remover itens.
-- Detalhes: busca o item no banco pelo id recebido na navegação.
+- Home: tela dividida ao meio, com o lado CLIENTE (esquerda), o lado ADM (direita) e a logo no centro, que leva para Sobre nós.
+- Loja (lado cliente): barra de pesquisa por nome de item, ícone de carrinho que abre uma barra lateral com os itens escolhidos, o valor de cada um, uma lixeira para remover e o total, carrossel com 5 itens destacados sorteados a cada vez que o app abre (3 aparecem por vez e trocam a cada 5 segundos) e os cards das categorias, 2 por linha.
+- Itens da categoria: ao clicar em uma categoria, lista os itens dela (2 por linha), com pesquisa só dentro da categoria e um filtro de faixa de preço (ícone de cifrão).
+- Menu do administrador: acesso ao gerenciamento de categorias e de itens.
+- Categorias (ADM): criar, editar (ícone de lápis) e remover categorias, escolhendo a imagem da categoria na galeria.
+- Itens (ADM): listar, criar, editar (ícone de lápis) e remover itens.
+- Detalhes: busca o item no banco pelo id recebido na navegação e tem o botão para adicionar o item ao carrinho. Todos os preços aparecem em reais.
 - Sobre nós: apresentação da equipe.
 
-## Estrutura do Room
+## Estrutura do projeto (MVVM)
 
-| Arquivo | Conteúdo |
+| Pacote | Conteúdo |
 |---|---|
-| `model/CometaModels.kt` | Entities `Categoria` e `Produto`, ambas com `id: Int` em `@PrimaryKey(autoGenerate = true)`. `Produto` tem chave estrangeira para `Categoria` com `CASCADE`. |
-| `model/CategoriaDao.kt` | `inserir`, `buscarTodos`, `atualizar`, `deletar` e `buscarPorId`, todos `suspend`. |
-| `model/ProdutoDao.kt` | `inserir`, `buscarTodos`, `atualizar`, `deletar`, `buscarPorId` e `buscarPorCategoria`, todos `suspend`. |
-| `model/AppDatabase.kt` | `@Database` com as duas entities, versão 1, Singleton com `companion object`, `@Volatile` e `synchronized`. |
-| `model/ImageStorage.kt` | Copia a foto escolhida na galeria para a pasta interna do app, porque o link devolvido pela galeria é temporário. |
-| `viewmodel/CategoryViewModel.kt` | Operações de banco das categorias em `CoroutineScope(Dispatchers.IO).launch`, com `try/catch` e `Log.e`. |
-| `viewmodel/ProductViewModel.kt` | Mesmo padrão para os produtos, incluindo a busca por id da tela de detalhes. |
+| `data` | `CometaModels.kt` (Entities `Categoria`, com imagem opcional, e `Produto`, com `id: Int` em `@PrimaryKey(autoGenerate = true)` e chave estrangeira com `CASCADE`), `CategoriaDao.kt`, `ProdutoDao.kt` (o `buscarTodos()` devolve `Flow<List<...>>`), `AppDatabase.kt` (versão 2, com migração que adiciona a imagem da categoria; Singleton com `@Volatile` e `synchronized`) e `ImageStorage.kt` (copia a foto da galeria para a pasta interna do app, porque o link devolvido pela galeria é temporário). |
+| `data.repository` | `CategoriaRepository` e `ProdutoRepository`: únicos que conversam com os DAOs. Os dois também cuidam de copiar e apagar as imagens. |
+| `viewmodel` | `CategoryViewModel`, `ProductViewModel` e `StoreViewModel` (loja do cliente: destaques sorteados, pesquisa e faixa de preço) e `CartViewModel` (carrinho, que fica só na memória e não tem pagamento), cada um com seu `UiState` e sua Factory. |
+| `ui` | Telas em Compose (`HomeScreeen.kt`, `StoreHomeScreen.kt`, `StoreCategoryScreen.kt`, `CarrinhoLateral.kt`, `CartoesLoja.kt`, `BarraLoja.kt`, `AdminMenuScreen.kt`, `CategoryScreen.kt`, `ProductScreen.kt`, `ProductDetailScreen.kt`, `AboutScreen.kt`) e o tema. As telas só leem o `uiState` e chamam métodos do ViewModel. |
 
-As telas buscam os dados com `LaunchedEffect` assim que abrem.
+Os dados chegam nas telas por `Flow`: quando a tabela muda, o Room atualiza a lista sozinho e a tela se redesenha, sem precisar buscar de novo.
+
+## Dados iniciais
+
+As categorias e itens que já vêm no app ficam na lista `dadosIniciais`, no arquivo `data/DadosIniciais.kt`. Eles são inseridos uma única vez, quando o banco é criado (primeira instalação do app). As imagens deles ficam em `app/src/main/res/drawable`, e a lista usa o nome do arquivo sem a extensão. Para testar de novo, desinstalar o app (ou limpar os dados dele) e rodar outra vez.
 
 ## Documentação do processo
 
@@ -50,6 +54,26 @@ Os dados ficavam só em memória, dentro dos ViewModels. Agora ficam no Room. (c
 
 ### Teste de persistência
 (inserir print ou vídeo: adicionar item, fechar o app, reabrir e o item continua lá)
+
+### Dificuldades de cada integrante
+(preencher)
+
+## Trabalho 4 — Arquitetura MVVM
+
+### Como estava o projeto no Trabalho 3 e o que mudou na reorganização
+(preencher com as palavras do trio)
+
+### Como o trio dividiu os pacotes
+(preencher com as palavras do trio)
+
+### Por que o Repository existe
+(preencher com as palavras do trio)
+
+### O que tem dentro do UiState de cada tela
+(preencher com as palavras do trio)
+
+### Alguma funcionalidade quebrou durante a reorganização?
+(preencher: o que quebrou e como encontraram e corrigiram)
 
 ### Dificuldades de cada integrante
 (preencher)

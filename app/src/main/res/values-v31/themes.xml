@@ -2,7 +2,7 @@
 <resources>
 
     <style name="Theme.CometaShop" parent="android:Theme.Material.Light.NoActionBar">
-        <item name="android:windowSplashScreenBackground">#37342D</item>
-        <item name="android:statusBarColor">#37342D</item>
+        <item name="android:windowSplashScreenBackground">#444236</item>
+        <item name="android:statusBarColor">#444236</item>
     </style>
 </resources>

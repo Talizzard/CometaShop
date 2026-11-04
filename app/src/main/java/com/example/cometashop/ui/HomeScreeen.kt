@@ -1,78 +1,125 @@
 package com.example.cometashop.ui
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AdminPanelSettings
+import androidx.compose.material.icons.filled.Storefront
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.cometashop.R
 import com.example.cometashop.ui.theme.*
 
 @Composable
 fun HomeScreen(
-    onNavigateToCategories: () -> Unit,
-    onNavigateToProducts: () -> Unit,
+    onNavigateToClient: () -> Unit,
+    onNavigateToAdmin: () -> Unit,
     onNavigateToAbout: () -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(CometaBlack)
-            .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(
-            text = "BEM-VINDO À\nCOMETA",
-            color = CometaYellow,
-            fontSize = 32.sp,
-            fontWeight = FontWeight.Black,
-            textAlign = TextAlign.Center
-        )
+    Box(modifier = Modifier.fillMaxSize()) {
+        Row(modifier = Modifier.fillMaxSize()) {
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight()
+                    .background(CometaBlack)
+                    .clickable { onNavigateToClient() },
+                contentAlignment = Alignment.BottomStart
+            ) {
+                Column(
+                    modifier = Modifier
+                        .windowInsetsPadding(WindowInsets.safeDrawing)
+                        .padding(20.dp),
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Storefront,
+                        contentDescription = null,
+                        tint = CometaYellow,
+                        modifier = Modifier.size(48.dp)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "CLIENTE",
+                        color = CometaYellow,
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.Black
+                    )
+                    Text(
+                        text = "Entrar na loja",
+                        color = CometaWhite,
+                        fontSize = 14.sp
+                    )
+                }
+            }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = "O arsenal definitivo de The Finals.",
-            color = CometaWhite,
-            textAlign = TextAlign.Center,
-            fontSize = 16.sp
-        )
-
-        Spacer(modifier = Modifier.height(48.dp))
-
-        Button(
-            onClick = { onNavigateToCategories() },
-            colors = ButtonDefaults.buttonColors(containerColor = CometaRed),
-            modifier = Modifier.fillMaxWidth().height(56.dp)
-        ) {
-            Text("GERENCIAR CATEGORIAS", color = CometaWhite, fontWeight = FontWeight.Bold)
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight()
+                    .background(CometaYellow)
+                    .clickable { onNavigateToAdmin() },
+                contentAlignment = Alignment.TopEnd
+            ) {
+                Column(
+                    modifier = Modifier
+                        .windowInsetsPadding(WindowInsets.safeDrawing)
+                        .padding(20.dp),
+                    horizontalAlignment = Alignment.End
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.AdminPanelSettings,
+                        contentDescription = null,
+                        tint = CometaBlack,
+                        modifier = Modifier.size(48.dp)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "ADM",
+                        color = CometaBlack,
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.Black
+                    )
+                    Text(
+                        text = "Gerenciar estoque",
+                        color = CometaBlack,
+                        fontSize = 14.sp,
+                        textAlign = TextAlign.End
+                    )
+                }
+            }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(
-            onClick = { onNavigateToProducts() },
-            colors = ButtonDefaults.buttonColors(containerColor = CometaYellow),
-            modifier = Modifier.fillMaxWidth().height(56.dp)
+        Box(
+            modifier = Modifier
+                .align(Alignment.Center)
+                .size(120.dp)
+                .clip(CircleShape)
+                .background(CometaWhite)
+                .border(6.dp, CometaRed, CircleShape)
+                .clickable { onNavigateToAbout() },
+            contentAlignment = Alignment.Center
         ) {
-            Text("EXPLORAR ARSENAL", color = CometaBlack, fontWeight = FontWeight.Bold)
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(
-            onClick = { onNavigateToAbout() },
-            colors = ButtonDefaults.buttonColors(containerColor = CometaWhite),
-            modifier = Modifier.fillMaxWidth().height(56.dp)
-        ) {
-            Text("SOBRE NÓS", color = CometaBlack, fontWeight = FontWeight.Bold)
+            Image(
+                painter = painterResource(id = R.drawable.logo),
+                contentDescription = "Sobre nós",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
         }
     }
 }

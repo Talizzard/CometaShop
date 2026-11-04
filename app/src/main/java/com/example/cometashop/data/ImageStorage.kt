@@ -1,4 +1,4 @@
-package com.example.cometashop.model
+package com.example.cometashop.data
 
 import android.content.Context
 import android.net.Uri

@@ -1,4 +1,4 @@
-package com.example.cometashop.model
+package com.example.cometashop.data
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
@@ -8,7 +8,8 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "categorias")
 data class Categoria(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val nome: String
+    val nome: String,
+    val imagemUri: String? = null
 )
 
 @Entity(
