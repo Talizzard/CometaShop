@@ -1,4 +1,4 @@
 ---
 
 ---
-Link do Canva para documentação: [https://canva.link/qw8nbzg0kx83p34](https://canva.link/qw8nbzg0kx83p34 "https://canva.link/qw8nbzg0kx83p34")
+Link do Canva para documentação: [LINK](https://canva.link/r9eyghr4psvmvrk)
